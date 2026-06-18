@@ -480,4 +480,96 @@ const updateThemeIcon = (theme) => {
     'background: #0094FF; color: #fff; padding: 4px 8px; font-weight: bold; border: 2px solid #000;',
     'background: #FFD93D; color: #000; padding: 4px 8px; font-weight: bold; border: 2px solid #000;'
   );
+    // ============================================================
+  // 13. HỆ THỐNG CHUYỂN TRANG ĐỘNG (DYNAMIC VIEW SWITCHER)
+  // ============================================================
+  const navItems = document.querySelectorAll('.sidebar-nav .nav-item, .nav-sub-item');
+  const mainContentLayout = document.querySelector('.content-layout');
+  const contentContainer = document.querySelector('.content-container');
+
+  const showDynamicPage = (pageTitle) => {
+    let dynamicContainer = document.getElementById('dynamic-content-container');
+    if (!dynamicContainer) {
+      dynamicContainer = document.createElement('div');
+      dynamicContainer.id = 'dynamic-content-container';
+      if (contentContainer) contentContainer.appendChild(dynamicContainer);
+    }
+
+    if (mainContentLayout) mainContentLayout.style.display = 'none';
+    dynamicContainer.style.display = 'block';
+
+    // Sinh giao diện mẫu đẹp cho từng trang tương ứng
+    let pageContent = '';
+    if (pageTitle === 'Lộ trình') {
+      pageContent = `
+        <div class="card" style="padding: 24px; background: var(--color-card);">
+          <h2 style="font-size: 24px; margin-bottom: 8px;">📍 Lộ Trình Học Tiếng Hàn</h2>
+          <p style="color: var(--color-text-muted); margin-bottom: 24px;">Lộ trình chi tiết giúp bạn chinh phục TOPIK từ con số 0.</p>
+          <div style="display: flex; flex-direction: column; gap: 16px; position: relative; padding-left: 20px; border-left: 3px dashed var(--color-main);">
+            <div class="card" style="padding: 16px; position: relative;">
+              <span style="position: absolute; left: -33px; top: 12px; width: 22px; height: 22px; background: var(--color-main); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold; border: 2px solid var(--color-border);">1</span>
+              <h3 style="font-size: 16px; font-weight: 700;">Nhập môn tiếng Hàn (Phát âm & Chữ cái)</h3>
+              <p style="font-size: 13px; color: var(--color-text-muted); margin-top: 4px;">Học bảng chữ cái Hangul, cách ghép vần và phát âm chuẩn.</p>
+            </div>
+            <div class="card" style="padding: 16px; position: relative;">
+              <span style="position: absolute; left: -33px; top: 12px; width: 22px; height: 22px; background: var(--color-accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: black; font-size: 12px; font-weight: bold; border: 2px solid var(--color-border);">2</span>
+              <h3 style="font-size: 16px; font-weight: 700;">Sơ cấp (TOPIK I)</h3>
+              <p style="font-size: 13px; color: var(--color-text-muted); margin-top: 4px;">Tích lũy 800+ từ vựng và ngữ pháp cơ bản để giao tiếp đơn giản.</p>
+            </div>
+            <div class="card" style="padding: 16px; position: relative;">
+              <span style="position: absolute; left: -33px; top: 12px; width: 22px; height: 22px; background: var(--color-success); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 12px; font-weight: bold; border: 2px solid var(--color-border);">3</span>
+              <h3 style="font-size: 16px; font-weight: 700;">Trung cấp (TOPIK II)</h3>
+              <p style="font-size: 13px; color: var(--color-text-muted); margin-top: 4px;">Luyện đọc hiểu, nghe hiểu nâng cao và luyện viết luận văn mẫu.</p>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      pageContent = `
+        <div class="card" style="padding: 40px; text-align: center; background: var(--color-card);">
+          <div style="font-size: 48px; margin-bottom: 16px;">🚀</div>
+          <h2 style="font-size: 24px; margin-bottom: 8px;">Trang "${pageTitle}" đang phát triển</h2>
+          <p style="color: var(--color-text-muted); max-width: 400px; margin: 0 auto 24px;">Tính năng và bài học của phần này hiện đang được thiết kế. Vui lòng quay lại sau!</p>
+          <button class="btn btn-primary" id="back-to-home-btn" style="cursor: pointer;">Quay lại Trang chủ</button>
+        </div>`;
+    }
+
+    dynamicContainer.innerHTML = pageContent;
+
+    const backBtn = document.getElementById('back-to-home-btn');
+    if (backBtn) {
+      backBtn.addEventListener('click', showHomePage);
+    }
+  };
+
+  const showHomePage = () => {
+    const dynamicContainer = document.getElementById('dynamic-content-container');
+    if (dynamicContainer) dynamicContainer.style.display = 'none';
+    if (mainContentLayout) mainContentLayout.style.display = 'flex';
+
+    navItems.forEach(item => item.classList.remove('active'));
+    const homeNav = document.getElementById('nav-home');
+    if (homeNav) homeNav.classList.add('active');
+  };
+
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      if (item.classList.contains('nav-item-expandable')) return;
+
+      e.preventDefault();
+
+      navItems.forEach(link => link.classList.remove('active'));
+      item.classList.add('active');
+
+      if (typeof closeSidebar === 'function') closeSidebar();
+
+      const spanText = item.querySelector('span');
+      const pageTitle = spanText ? spanText.textContent.trim() : item.textContent.trim();
+
+      if (pageTitle === 'Trang chủ') {
+        showHomePage();
+      } else {
+        showDynamicPage(pageTitle);
+      }
+    });
+   });
 });
