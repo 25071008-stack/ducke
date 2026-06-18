@@ -19,17 +19,17 @@ document.addEventListener('DOMContentLoaded', () => {
     updateThemeIcon(theme);
   };
 
-  /** Cập nhật biểu tượng nút chuyển đổi chủ đề (mặt trời ↔ mặt trăng) */
-  const updateThemeIcon = (theme) => {
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    if (!themeToggleBtn) return;
+const updateThemeIcon = (theme) => {
+  const themeToggleBtns = [
+    document.getElementById('theme-toggle'),
+    document.getElementById('theme-toggle-mobile')
+  ];
 
+  themeToggleBtns.forEach(btn => {
+    if (!btn) return;
     if (theme === 'dark') {
-      // Biểu tượng mặt trời - hiển thị khi đang ở chế độ tối (nhấn để chuyển sang sáng)
-      themeToggleBtn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
-             fill="none" stroke="currentColor" stroke-width="2.5"
-             stroke-linecap="round" stroke-linejoin="round">
+      btn.innerHTML = `
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="5"></circle>
           <line x1="12" y1="1" x2="12" y2="3"></line>
           <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -41,17 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
         </svg>`;
     } else {
-      // Biểu tượng mặt trăng - hiển thị khi đang ở chế độ sáng (nhấn để chuyển sang tối)
-      themeToggleBtn.innerHTML = `
-        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
-             fill="none" stroke="currentColor" stroke-width="2.5"
-             stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3
-                   7 7 0 0 0 21 12.79z"></path>
+      btn.innerHTML = `
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
         </svg>`;
     }
-  };
-
+  });
+};
   /** Chuyển đổi giữa chế độ sáng và tối */
   const toggleTheme = () => {
     const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
@@ -61,11 +57,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Áp dụng chủ đề đã lưu khi tải trang
   applyTheme(getSavedTheme());
-
-  // Gắn sự kiện cho nút chuyển đổi chủ đề
+  // Gắn sự kiện cho nút chuyển đổi chủ đề (cả Desktop và Mobile)
   const themeToggleBtn = document.getElementById('theme-toggle');
   if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', toggleTheme);
+  }
+
+  const themeToggleMobileBtn = document.getElementById('theme-toggle-mobile');
+  if (themeToggleMobileBtn) {
+    themeToggleMobileBtn.addEventListener('click', toggleTheme);
   }
 
   // Nút cài đặt cũng chuyển đổi chủ đề
@@ -172,7 +172,21 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal();
   });
+  const loginForm = document.getElementById('login-form');
+  if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const emailInput = document.getElementById('email');
+      const emailValue = emailInput ? emailInput.value.trim() : '';
 
+      if (emailValue) {
+        showToast(`Đăng nhập thành công với: ${emailValue}!`, 'success');
+        closeModal();
+      } else {
+        showToast('Vui lòng nhập địa chỉ Email!', 'warning');
+      }
+    });
+  }
   // ============================================================
   // 5. THẺ HỌC - XỬ LÝ NHẤP CHUỘT
   // ============================================================
