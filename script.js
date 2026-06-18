@@ -191,21 +191,51 @@ const updateThemeIcon = (theme) => {
   // 5. THẺ HỌC - XỬ LÝ NHẤP CHUỘT
   // ============================================================
 
-  const studyCards = document.querySelectorAll('.study-card');
+    const studyCards = document.querySelectorAll('.study-card');
 
   studyCards.forEach((card) => {
     card.addEventListener('click', () => {
       // Lấy tiêu đề thẻ học
       const titleEl = card.querySelector('.study-card-title, h3, h4');
       const title = titleEl ? titleEl.textContent.trim() : 'bài học';
-      console.log(`Đang chuyển đến ${title}...`);
-      showToast(`Đang chuyển đến ${title}...`, 'info');
+      
+      // Đồng thời kích hoạt class active cho menu tương ứng ở thanh bên
+      if (typeof navItems !== 'undefined') {
+        let matchedNavItem = null;
+        navItems.forEach(item => {
+          const spanText = item.querySelector('span');
+          const itemText = spanText ? spanText.textContent.trim() : item.textContent.trim();
+          if (itemText.toLowerCase() === title.toLowerCase()) {
+            matchedNavItem = item;
+          }
+        });
+
+        if (matchedNavItem) {
+          navItems.forEach(link => link.classList.remove('active'));
+          matchedNavItem.classList.add('active');
+          
+          // Mở rộng menu cha nếu menu tương ứng nằm trong submenu
+          const parentSubmenu = matchedNavItem.closest('.nav-submenu');
+          if (parentSubmenu) {
+            parentSubmenu.classList.add('open');
+            parentSubmenu.style.maxHeight = `${parentSubmenu.scrollHeight}px`;
+            const parentExpandable = parentSubmenu.previousElementSibling;
+            if (parentExpandable && parentExpandable.classList.contains('nav-item-expandable')) {
+              parentExpandable.classList.add('expanded');
+            }
+          }
+        }
+      }
+
+      // Gọi hàm hiển thị giao diện động
+      if (typeof showDynamicPage === 'function') {
+        showDynamicPage(title);
+      }
     });
 
     // Thêm con trỏ pointer cho thẻ
     card.style.cursor = 'pointer';
   });
-
   // ============================================================
   // 6. MỤC ÔN TẬP - LẬT THẺ
   // ============================================================
